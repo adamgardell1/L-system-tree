@@ -7,6 +7,8 @@ let branchLength;
 let axiom;
 let rules;
 
+let leavesOn = {leaves: false}
+
 let randomY;
 let randomX;
 let randomY2;
@@ -20,11 +22,8 @@ let currentRules = [];
 let randomNumbers = [];
 let randomNumbers2 = [];
 
-
-
-
-
 function generate() {
+ 
   var nextSentence = "";
 
   for (var i = 0; i < sentence.length; i++) {
@@ -55,6 +54,8 @@ function turtle() {
   let currentAngle = guiVar.angle;
   let currentSentence = sentences[guiVar.iterations];
 
+  //let counter = 1;
+
   stroke(70, 40, 20);
 
   for (var i = 0; i < currentSentence.length; i++) {
@@ -83,14 +84,13 @@ function turtle() {
       push();
 
     } else if (current == "]") {
-      //branchSize = lastSize;
-
+      if(leavesOn.leaves){
       fill(0, 100, 20)
       stroke(0, 100, 20)
       strokeWeight(leafWidth);
       line(0, 0, 0, 0, -leafLength, 0);
+      }
       pop();
-
     }
   }
 }
@@ -117,7 +117,49 @@ function random3Dangle() {
   }
 }
 
-function treePreset() {
+function treePreset(chosenNr) {
+    rules.rule1a = ""
+    rules.rule1b = ""
+  if(chosenNr == 1){
+    leavesOn.leaves = true;
+    rules.axiom = "F"
+    rules.rule0a = "F"
+    rules.rule0b = "F[+F]F[-F]F"
+    guiVar.iterations = 2
+    guiVar.length = 10
+    guiVar.angle = 25
+    guiVar.angle2 = 15
+    guiVar.width = 1.4
+  
+  }
+  if(chosenNr == 2){
+    leavesOn.leaves = true;
+    rules.axiom = "F"
+    rules.rule0a = "F"
+    rules.rule0b = "F[+F]F[-F][F]"
+    guiVar.iterations = 2
+    guiVar.length = 18
+    guiVar.angle = 20
+    guiVar.angle2 = 15
+    guiVar.width = 1.4
+  }
+  if(chosenNr == 3){
+    rules.axiom = "F"
+    rules.rule0a = "F"
+    rules.rule0b = "F[+F]F[-F]F"
+    rules.rule1a = "F"
+    rules.rule1b = "F"
+
+  }
+  if(chosenNr == 4){
+    rules.axiom = "F"
+    rules.rule0a = "F"
+    rules.rule0b = "F[+F]F[-F]F"
+    rules.rule1a = "F"
+    rules.rule1b = "F"
+  }
+  recalculateSystem()    
+  random3Dangle()
 
 }
 
@@ -146,33 +188,37 @@ function setup() {
   guiVar = new guiVariables();
   rules = new guiRules();
 
-  var obj = { Tree1: function () { console.log("clicked") } };
+ 
 
 
   let gui_tree = new dat.GUI();
 
-  gui_tree.add(guiVar, 'iterations', 0, 5, 1);
-  gui_tree.add(guiVar, 'angle', 1, 90, 1);
-  angleController3D = gui_tree.add(guiVar, 'angle2', 0, 45, 1);
-  gui_tree.add(guiVar, 'length', 1, 100);
-  gui_tree.add(guiVar, 'width', 1, 50);
-  gui_tree.add(guiVar, 'leaf_Length', 0, 50, 1);
-  gui_tree.add(guiVar, 'leaf_Width', 0, 25, 1);
+  gui_tree.add(guiVar, 'iterations', 0, 5, 1).listen();
+  gui_tree.add(guiVar, 'angle', 1, 90, 1).listen();
+  angleController3D = gui_tree.add(guiVar, 'angle2', 0, 45, 1).listen();
+  gui_tree.add(guiVar, 'length', 1, 100).listen();
+  gui_tree.add(guiVar, 'width', 1, 50).listen();
+  leavesController = gui_tree.add(leavesOn, 'leaves').name('Leaves').listen().onChange(function(){!leavesOn.leaves});
+
+  gui_tree.add(guiVar, 'leaf_Length', 0, 50, 1).listen();
+  gui_tree.add(guiVar, 'leaf_Width', 0, 25, 1).listen();
 
 
   const ruleFolder = gui_tree.addFolder("Rules");
 
-  //ruleFolder.open();
-
-  axiomController = ruleFolder.add(rules, 'axiom');
-  ruleController1 = ruleFolder.add(rules, 'rule0a');
-  ruleController2 = ruleFolder.add(rules, 'rule0b');
-  ruleController3 = ruleFolder.add(rules, 'rule1a');
-  ruleController4 = ruleFolder.add(rules, 'rule1b');
+  axiomController = ruleFolder.add(rules, 'axiom').listen();
+  ruleController1 = ruleFolder.add(rules, 'rule0a').listen();
+  ruleController2 = ruleFolder.add(rules, 'rule0b').listen();
+  ruleController3 = ruleFolder.add(rules, 'rule1a').listen();
+  ruleController4 = ruleFolder.add(rules, 'rule1b').listen();
+  ruleFolder.open()
 
   const presetFolder = gui_tree.addFolder("Presets");
 
-  presetFolder.add(obj, 'Tree1');
+  presetFolder.add({Tree1: function () { treePreset(1) }}, 'Tree1');
+  presetFolder.add({Tree2: function () { treePreset(2) }}, 'Tree2');
+  presetFolder.add({Tree3: function () { treePreset(3) }}, 'Tree3');
+  presetFolder.add({Tree4: function () { treePreset(4) }}, 'Tree4');
 
   presetFolder.open();
 
@@ -215,7 +261,6 @@ function setup() {
 function draw() {
   translate(0, 100, 0)
   background(175);
-
   turtle();
   orbitControl()
   //branch(100)
