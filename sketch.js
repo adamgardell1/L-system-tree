@@ -251,7 +251,7 @@ function setup() {
   ruleController2 = ruleFolder.add(rules, 'rule0b').listen().onChange(function () { recalculateSystem(), resetParagraph() })
   ruleController3 = ruleFolder.add(rules, 'rule1a').listen().onChange(function () { recalculateSystem(), resetParagraph() })
   ruleController4 = ruleFolder.add(rules, 'rule1b').listen().onChange(function () { recalculateSystem(), resetParagraph() })
-  displaySentenceController = ruleFolder.add(rules, 'display').name('Display rules').listen().onChange(function () { !rules.display })
+  displaySentenceController = ruleFolder.add(rules, 'display').name('Display sequence').listen().onChange(function () { !rules.display })
   ruleFolder.open()
 
   const presetFolder = gui_tree.addFolder("Presets");
